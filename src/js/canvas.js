@@ -1,3 +1,5 @@
+import platform from "../img/platform.png";
+
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
@@ -39,25 +41,28 @@ class Player {
 }
 
 class Platform {
-  constructor({ x, y }) {
+  constructor({ x, y, image }) {
     this.position = {
       x: x,
       y: y,
     };
-    this.width = 200;
-    this.height = 20;
+    this.image = image;
+    this.width = image.width;
+    this.height = image.height;
   }
 
   draw() {
-    c.fillStyle = "blue";
-    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    c.drawImage(this.image, this.position.x, this.position.y);
   }
 }
 
+const image = new Image();
+image.src = platform;
+
 const player = new Player();
 const platforms = [
-  new Platform({ x: 200, y: 200 }),
-  new Platform({ x: 500, y: 300 }),
+  new Platform({ x: 200, y: 200, image: image }),
+  new Platform({ x: 500, y: 300, image: image }),
 ];
 
 const keys = {
@@ -71,13 +76,15 @@ const keys = {
 
 player.update();
 
+let scrollOffset = 0;
+
 function animate() {
   requestAnimationFrame(animate);
   c.clearRect(0, 0, canvas.width, canvas.height);
-  player.update();
   platforms.forEach((platform) => {
     platform.draw();
   });
+  player.update();
 
   if (keys.right.pressed && player.position.x < 400) {
     player.velocity.x = 5;
@@ -86,10 +93,13 @@ function animate() {
   } else {
     player.velocity.x = 0;
     if (keys.right.pressed) {
+      scrollOffset += 5;
       platforms.forEach((platform) => {
         platform.position.x -= 5;
       });
     } else if (keys.left.pressed) {
+      scrollOffset -= 5;
+
       platforms.forEach((platform) => {
         platform.position.x += 5;
       });
@@ -108,8 +118,7 @@ function animate() {
     }
   });
 
-  // experimental
-
+  // experimental platform
   platforms.forEach((platform) => {
     if (
       player.velocity.y < 0 && // Player is moving upwards
@@ -122,6 +131,10 @@ function animate() {
       player.velocity.y = 5; // Push the player down
     }
   });
+
+  if (scrollOffset > 2000) {
+    console.log("End of game");
+  }
 }
 
 animate();

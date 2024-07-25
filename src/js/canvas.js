@@ -1,6 +1,7 @@
 import platform from "../img/platform.png";
 import hills from "../img/hills.png";
 import background from "../img/background.png";
+import platformSmallTall from "../img/platformSmallTall.png";
 
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
@@ -11,6 +12,7 @@ canvas.height = 576;
 const gravity = 0.5;
 class Player {
   constructor() {
+    this.speed = 10;
     this.position = {
       x: 100,
       y: 100,
@@ -83,19 +85,8 @@ function createImage(path) {
 let platformImage = createImage(platform);
 
 let player = new Player();
-let platforms = [
-  new Platform({ x: 0, y: 470, image: platformImage }),
-  new Platform({ x: platformImage.width, y: 470, image: platformImage }),
-  new Platform({
-    x: platformImage.width * 2 + 100,
-    y: 470,
-    image: platformImage,
-  }),
-];
-let genericObjects = [
-  new GenericObject({ x: 0, y: 0, image: createImage(background) }),
-  new GenericObject({ x: 0, y: 0, image: createImage(hills) }),
-];
+let platforms = [];
+let genericObjects = [];
 
 const keys = {
   right: {
@@ -113,10 +104,25 @@ function init() {
 
   player = new Player();
   platforms = [
+    new Platform({
+      x: createImage(platformSmallTall).width * 2,
+      y: 270,
+      image: createImage(platformSmallTall),
+    }),
     new Platform({ x: 0, y: 470, image: platformImage }),
     new Platform({ x: platformImage.width, y: 470, image: platformImage }),
     new Platform({
       x: platformImage.width * 2 + 100,
+      y: 470,
+      image: platformImage,
+    }),
+    new Platform({
+      x: platformImage.width * 3 + 300,
+      y: 470,
+      image: platformImage,
+    }),
+    new Platform({
+      x: platformImage.width * 4 + 500,
       y: 470,
       image: platformImage,
     }),
@@ -143,28 +149,28 @@ function animate() {
   player.update();
 
   if (keys.right.pressed && player.position.x < 400) {
-    player.velocity.x = 10;
+    player.velocity.x = player.speed;
   } else if (keys.left.pressed && player.position.x > 100) {
-    player.velocity.x = -10;
+    player.velocity.x = -player.speed;
   } else {
     player.velocity.x = 0;
     if (keys.right.pressed) {
-      scrollOffset += 10;
+      scrollOffset += player.speed;
       platforms.forEach((platform) => {
-        platform.position.x -= 10;
+        platform.position.x -= player.speed;
       });
 
       genericObjects.forEach((genericObject) => {
-        genericObject.position.x -= 3;
+        genericObject.position.x -= player.speed * 0.66;
       });
     } else if (keys.left.pressed) {
-      scrollOffset -= 5;
+      scrollOffset -= player.speed;
 
       platforms.forEach((platform) => {
-        platform.position.x += 5;
+        platform.position.x += player.speed;
       });
       genericObjects.forEach((genericObject) => {
-        genericObject.position.x += 3;
+        genericObject.position.x += player.speed * 0.66;
       });
     }
   }
@@ -196,7 +202,7 @@ function animate() {
   });
 
   // win condition
-  if (scrollOffset > 2000) {
+  if (scrollOffset > platformImage.width * 4 + 250) {
     console.log("End of game");
   }
 
@@ -207,6 +213,7 @@ function animate() {
   }
 }
 
+init();
 animate();
 
 window.addEventListener("keydown", ({ keyCode }) => {
@@ -217,7 +224,7 @@ window.addEventListener("keydown", ({ keyCode }) => {
       break;
     case 87:
       console.log("up");
-      player.velocity.y -= 5;
+      player.velocity.y -= 15;
       break;
     case 68:
       console.log("right");
@@ -237,10 +244,10 @@ window.addEventListener("keyup", ({ keyCode }) => {
       console.log("left");
       keys.left.pressed = false;
       break;
-    case 87:
-      console.log("up");
-      player.velocity.y = -10;
-      break;
+    // case 87:
+    //   console.log("up");
+    //   player.velocity.y = -10;
+    //   break;
     case 68:
       console.log("right");
       keys.right.pressed = false;

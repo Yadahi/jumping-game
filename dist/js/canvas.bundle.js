@@ -42,6 +42,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__webpack_require__.p + "ffab39d3487de561be1a081fcfb3806d.png");
 
+/***/ }),
+
+/***/ "./src/img/platformSmallTall.png":
+/*!***************************************!*\
+  !*** ./src/img/platformSmallTall.png ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__webpack_require__.p + "0587f9be8e442eb74b2fe283bbf1a947.png");
+
 /***/ })
 
 /******/ 	});
@@ -143,9 +157,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _img_platform_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../img/platform.png */ "./src/img/platform.png");
 /* harmony import */ var _img_hills_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../img/hills.png */ "./src/img/hills.png");
 /* harmony import */ var _img_background_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../img/background.png */ "./src/img/background.png");
+/* harmony import */ var _img_platformSmallTall_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../img/platformSmallTall.png */ "./src/img/platformSmallTall.png");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 
 
 
@@ -157,6 +173,7 @@ var gravity = 0.5;
 var Player = /*#__PURE__*/function () {
   function Player() {
     _classCallCheck(this, Player);
+    this.speed = 10;
     this.position = {
       x: 100,
       y: 100
@@ -241,28 +258,8 @@ function createImage(path) {
 }
 var platformImage = createImage(_img_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
 var player = new Player();
-var platforms = [new Platform({
-  x: 0,
-  y: 470,
-  image: platformImage
-}), new Platform({
-  x: platformImage.width,
-  y: 470,
-  image: platformImage
-}), new Platform({
-  x: platformImage.width * 2 + 100,
-  y: 470,
-  image: platformImage
-})];
-var genericObjects = [new GenericObject({
-  x: 0,
-  y: 0,
-  image: createImage(_img_background_png__WEBPACK_IMPORTED_MODULE_2__["default"])
-}), new GenericObject({
-  x: 0,
-  y: 0,
-  image: createImage(_img_hills_png__WEBPACK_IMPORTED_MODULE_1__["default"])
-})];
+var platforms = [];
+var genericObjects = [];
 var keys = {
   right: {
     pressed: false
@@ -276,6 +273,10 @@ function init() {
   platformImage = createImage(_img_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
   player = new Player();
   platforms = [new Platform({
+    x: createImage(_img_platformSmallTall_png__WEBPACK_IMPORTED_MODULE_3__["default"]).width * 2,
+    y: 270,
+    image: createImage(_img_platformSmallTall_png__WEBPACK_IMPORTED_MODULE_3__["default"])
+  }), new Platform({
     x: 0,
     y: 470,
     image: platformImage
@@ -285,6 +286,14 @@ function init() {
     image: platformImage
   }), new Platform({
     x: platformImage.width * 2 + 100,
+    y: 470,
+    image: platformImage
+  }), new Platform({
+    x: platformImage.width * 3 + 300,
+    y: 470,
+    image: platformImage
+  }), new Platform({
+    x: platformImage.width * 4 + 500,
     y: 470,
     image: platformImage
   })];
@@ -311,26 +320,26 @@ function animate() {
   });
   player.update();
   if (keys.right.pressed && player.position.x < 400) {
-    player.velocity.x = 10;
+    player.velocity.x = player.speed;
   } else if (keys.left.pressed && player.position.x > 100) {
-    player.velocity.x = -10;
+    player.velocity.x = -player.speed;
   } else {
     player.velocity.x = 0;
     if (keys.right.pressed) {
-      scrollOffset += 10;
+      scrollOffset += player.speed;
       platforms.forEach(function (platform) {
-        platform.position.x -= 10;
+        platform.position.x -= player.speed;
       });
       genericObjects.forEach(function (genericObject) {
-        genericObject.position.x -= 3;
+        genericObject.position.x -= player.speed * 0.66;
       });
     } else if (keys.left.pressed) {
-      scrollOffset -= 5;
+      scrollOffset -= player.speed;
       platforms.forEach(function (platform) {
-        platform.position.x += 5;
+        platform.position.x += player.speed;
       });
       genericObjects.forEach(function (genericObject) {
-        genericObject.position.x += 3;
+        genericObject.position.x += player.speed * 0.66;
       });
     }
   }
@@ -356,7 +365,7 @@ function animate() {
   });
 
   // win condition
-  if (scrollOffset > 2000) {
+  if (scrollOffset > platformImage.width * 4 + 250) {
     console.log("End of game");
   }
 
@@ -366,6 +375,7 @@ function animate() {
     init();
   }
 }
+init();
 animate();
 window.addEventListener("keydown", function (_ref3) {
   var keyCode = _ref3.keyCode;
@@ -376,7 +386,7 @@ window.addEventListener("keydown", function (_ref3) {
       break;
     case 87:
       console.log("up");
-      player.velocity.y -= 5;
+      player.velocity.y -= 15;
       break;
     case 68:
       console.log("right");
@@ -396,10 +406,10 @@ window.addEventListener("keyup", function (_ref4) {
       console.log("left");
       keys.left.pressed = false;
       break;
-    case 87:
-      console.log("up");
-      player.velocity.y = -10;
-      break;
+    // case 87:
+    //   console.log("up");
+    //   player.velocity.y = -10;
+    //   break;
     case 68:
       console.log("right");
       keys.right.pressed = false;

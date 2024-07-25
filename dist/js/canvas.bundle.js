@@ -181,11 +181,11 @@ var Player = /*#__PURE__*/function () {
       this.position.y += this.velocity.y;
       this.position.x += this.velocity.x;
       if (this.position.y + this.height + this.velocity.y <= canvas.height) {
-        console.log("falling");
         this.velocity.y += gravity;
-      } else {
-        this.velocity.y = 0;
       }
+      // else {
+      //   this.velocity.y = 0;
+      // }
     }
   }]);
   return Player;
@@ -249,6 +249,10 @@ var platforms = [new Platform({
   x: platformImage.width,
   y: 470,
   image: platformImage
+}), new Platform({
+  x: platformImage.width * 2 + 100,
+  y: 470,
+  image: platformImage
 })];
 var genericObjects = [new GenericObject({
   x: 0,
@@ -267,8 +271,34 @@ var keys = {
     pressed: false
   }
 };
-player.update();
 var scrollOffset = 0;
+function init() {
+  platformImage = createImage(_img_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
+  player = new Player();
+  platforms = [new Platform({
+    x: 0,
+    y: 470,
+    image: platformImage
+  }), new Platform({
+    x: platformImage.width,
+    y: 470,
+    image: platformImage
+  }), new Platform({
+    x: platformImage.width * 2 + 100,
+    y: 470,
+    image: platformImage
+  })];
+  genericObjects = [new GenericObject({
+    x: 0,
+    y: 0,
+    image: createImage(_img_background_png__WEBPACK_IMPORTED_MODULE_2__["default"])
+  }), new GenericObject({
+    x: 0,
+    y: 0,
+    image: createImage(_img_hills_png__WEBPACK_IMPORTED_MODULE_1__["default"])
+  })];
+  scrollOffset = 0;
+}
 function animate() {
   requestAnimationFrame(animate);
   c.fillStyle = "white";
@@ -281,15 +311,15 @@ function animate() {
   });
   player.update();
   if (keys.right.pressed && player.position.x < 400) {
-    player.velocity.x = 5;
+    player.velocity.x = 10;
   } else if (keys.left.pressed && player.position.x > 100) {
-    player.velocity.x = -5;
+    player.velocity.x = -10;
   } else {
     player.velocity.x = 0;
     if (keys.right.pressed) {
-      scrollOffset += 5;
+      scrollOffset += 10;
       platforms.forEach(function (platform) {
-        platform.position.x -= 5;
+        platform.position.x -= 10;
       });
       genericObjects.forEach(function (genericObject) {
         genericObject.position.x -= 3;
@@ -324,8 +354,16 @@ function animate() {
       player.velocity.y = 5; // Push the player down
     }
   });
+
+  // win condition
   if (scrollOffset > 2000) {
     console.log("End of game");
+  }
+
+  // lose condition
+  if (player.position.y > canvas.height) {
+    console.log("You lose");
+    init();
   }
 }
 animate();

@@ -34,11 +34,11 @@ class Player {
     this.position.x += this.velocity.x;
 
     if (this.position.y + this.height + this.velocity.y <= canvas.height) {
-      console.log("falling");
       this.velocity.y += gravity;
-    } else {
-      this.velocity.y = 0;
     }
+    // else {
+    //   this.velocity.y = 0;
+    // }
   }
 }
 
@@ -80,14 +80,19 @@ function createImage(path) {
   return image;
 }
 
-const platformImage = createImage(platform);
+let platformImage = createImage(platform);
 
-const player = new Player();
-const platforms = [
+let player = new Player();
+let platforms = [
   new Platform({ x: 0, y: 470, image: platformImage }),
   new Platform({ x: platformImage.width, y: 470, image: platformImage }),
+  new Platform({
+    x: platformImage.width * 2 + 100,
+    y: 470,
+    image: platformImage,
+  }),
 ];
-const genericObjects = [
+let genericObjects = [
   new GenericObject({ x: 0, y: 0, image: createImage(background) }),
   new GenericObject({ x: 0, y: 0, image: createImage(hills) }),
 ];
@@ -101,9 +106,28 @@ const keys = {
   },
 };
 
-player.update();
-
 let scrollOffset = 0;
+
+function init() {
+  platformImage = createImage(platform);
+
+  player = new Player();
+  platforms = [
+    new Platform({ x: 0, y: 470, image: platformImage }),
+    new Platform({ x: platformImage.width, y: 470, image: platformImage }),
+    new Platform({
+      x: platformImage.width * 2 + 100,
+      y: 470,
+      image: platformImage,
+    }),
+  ];
+  genericObjects = [
+    new GenericObject({ x: 0, y: 0, image: createImage(background) }),
+    new GenericObject({ x: 0, y: 0, image: createImage(hills) }),
+  ];
+
+  scrollOffset = 0;
+}
 
 function animate() {
   requestAnimationFrame(animate);
@@ -119,15 +143,15 @@ function animate() {
   player.update();
 
   if (keys.right.pressed && player.position.x < 400) {
-    player.velocity.x = 5;
+    player.velocity.x = 10;
   } else if (keys.left.pressed && player.position.x > 100) {
-    player.velocity.x = -5;
+    player.velocity.x = -10;
   } else {
     player.velocity.x = 0;
     if (keys.right.pressed) {
-      scrollOffset += 5;
+      scrollOffset += 10;
       platforms.forEach((platform) => {
-        platform.position.x -= 5;
+        platform.position.x -= 10;
       });
 
       genericObjects.forEach((genericObject) => {
@@ -171,8 +195,15 @@ function animate() {
     }
   });
 
+  // win condition
   if (scrollOffset > 2000) {
     console.log("End of game");
+  }
+
+  // lose condition
+  if (player.position.y > canvas.height) {
+    console.log("You lose");
+    init();
   }
 }
 

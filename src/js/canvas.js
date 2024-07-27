@@ -3,6 +3,11 @@ import hills from "../img/hills.png";
 import background from "../img/background.png";
 import platformSmallTall from "../img/platformSmallTall.png";
 
+import spriteRunLeft from "../img/spriteRunLeft.png";
+import spriteRunRight from "../img/spriteRunRight.png";
+import spriteStandLeft from "../img/spriteStandLeft.png";
+import spriteStandRight from "../img/spriteStandRight.png";
+
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
@@ -21,16 +26,53 @@ class Player {
       x: 0,
       y: 0,
     };
-    this.width = 30;
-    this.height = 30;
+    this.width = 66;
+    this.height = 150;
+
+    this.image = createImage(spriteStandRight);
+    this.frames = 0;
+    this.sprites = {
+      stand: {
+        right: createImage(spriteStandRight),
+        cropWidth: 177,
+        width: 66,
+      },
+      run: {
+        right: createImage(spriteRunRight),
+        cropWidth: 341,
+        width: 127.875,
+      },
+    };
+
+    this.currentSprite = this.sprites.stand.right;
+    this.currentCropWidth = this.sprites.stand.cropWidth;
+    this.currentWidth = this.sprites.stand.width;
   }
 
   draw() {
-    c.fillStyle = "red";
-    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+    c.drawImage(
+      this.currentSprite,
+      this.currentCropWidth * this.frames,
+      0,
+      this.currentCropWidth,
+      400,
+      this.position.x,
+      this.position.y,
+      this.currentWidth,
+      this.height
+    );
   }
 
   update() {
+    this.frames++;
+    if (this.frames > 59 && this.currentSprite === this.sprites.stand.right) {
+      this.frames = 0;
+    } else if (
+      this.frames > 29 &&
+      this.currentSprite === this.sprites.run.right
+    ) {
+      this.frames = 0;
+    }
     this.draw();
     this.position.y += this.velocity.y;
     this.position.x += this.velocity.x;
@@ -38,9 +80,6 @@ class Player {
     if (this.position.y + this.height + this.velocity.y <= canvas.height) {
       this.velocity.y += gravity;
     }
-    // else {
-    //   this.velocity.y = 0;
-    // }
   }
 }
 
@@ -232,6 +271,9 @@ window.addEventListener("keydown", ({ keyCode }) => {
     case 68:
       console.log("right");
       keys.right.pressed = true;
+      player.currentSprite = player.sprites.run.right;
+      player.currentCropWidth = player.sprites.run.cropWidth;
+      player.currentWidth = player.sprites.run.width;
       break;
     case 83:
       console.log("down");
@@ -254,6 +296,9 @@ window.addEventListener("keyup", ({ keyCode }) => {
     case 68:
       console.log("right");
       keys.right.pressed = false;
+      player.currentSprite = player.sprites.stand.right;
+      player.currentCropWidth = player.sprites.stand.cropWidth;
+      player.currentWidth = player.sprites.stand.width;
       break;
     case 83:
       console.log("down");

@@ -67,11 +67,16 @@ class Player {
 
   update() {
     this.frames++;
-    if (this.frames > 59 && this.currentSprite === this.sprites.stand.right) {
+    if (
+      this.frames > 59 &&
+      (this.currentSprite === this.sprites.stand.right ||
+        this.currentSprite === this.sprites.stand.left)
+    ) {
       this.frames = 0;
     } else if (
       this.frames > 29 &&
-      this.currentSprite === this.sprites.run.right
+      (this.currentSprite === this.sprites.run.right ||
+        this.currentSprite === this.sprites.run.left)
     ) {
       this.frames = 0;
     }
@@ -129,6 +134,7 @@ let player = new Player();
 let platforms = [];
 let genericObjects = [];
 
+let lastKey;
 const keys = {
   right: {
     pressed: false,
@@ -219,6 +225,7 @@ function animate() {
     }
   }
 
+  // platform collisions detection
   platforms.forEach((platform) => {
     if (
       player.position.y + player.height <= platform.position.y &&
@@ -230,6 +237,47 @@ function animate() {
       player.velocity.y = 0;
     }
   });
+
+  // sprite switching
+  if (
+    keys.right.pressed &&
+    lastKey === "right" &&
+    player.currentSprite !== player.sprites.run.right
+  ) {
+    console.log("right pressed");
+    player.frames = 1;
+    player.currentSprite = player.sprites.run.right;
+    player.currentCropWidth = player.sprites.run.cropWidth;
+    player.currentWidth = player.sprites.run.width;
+  } else if (
+    keys.left.pressed &&
+    lastKey === "left" &&
+    player.currentSprite !== player.sprites.run.left
+  ) {
+    console.log("left pressed");
+    player.frames = 1;
+    player.currentSprite = player.sprites.run.left;
+    player.currentCropWidth = player.sprites.run.cropWidth;
+    player.currentWidth = player.sprites.run.width;
+  } else if (
+    !keys.left.pressed &&
+    lastKey === "left" &&
+    player.currentSprite !== player.sprites.stand.left
+  ) {
+    console.log("left not pressed");
+    player.currentSprite = player.sprites.stand.left;
+    player.currentCropWidth = player.sprites.stand.cropWidth;
+    player.currentWidth = player.sprites.stand.width;
+  } else if (
+    !keys.right.pressed &&
+    lastKey === "right" &&
+    player.currentSprite !== player.sprites.stand.right
+  ) {
+    console.log("right not pressed");
+    player.currentSprite = player.sprites.stand.right;
+    player.currentCropWidth = player.sprites.stand.cropWidth;
+    player.currentWidth = player.sprites.stand.width;
+  }
 
   // experimental platform
   platforms.forEach((platform) => {
@@ -263,22 +311,19 @@ animate();
 window.addEventListener("keydown", ({ keyCode }) => {
   switch (keyCode) {
     case 65:
-      console.log("left");
+      console.log("keydown left");
       keys.left.pressed = true;
-      player.currentSprite = player.sprites.run.left;
-      player.currentCropWidth = player.sprites.run.cropWidth;
-      player.currentWidth = player.sprites.run.width;
+      lastKey = "left";
       break;
     case 87:
       console.log("up");
       player.velocity.y -= 15;
       break;
     case 68:
-      console.log("right");
+      console.log("keydown right");
       keys.right.pressed = true;
-      player.currentSprite = player.sprites.run.right;
-      player.currentCropWidth = player.sprites.run.cropWidth;
-      player.currentWidth = player.sprites.run.width;
+      lastKey = "right";
+
       break;
     case 83:
       console.log("down");
@@ -293,23 +338,23 @@ window.addEventListener("keyup", ({ keyCode }) => {
     case 65:
       console.log("left");
       keys.left.pressed = false;
-      player.currentSprite = player.sprites.stand.left;
-      player.currentCropWidth = player.sprites.stand.cropWidth;
-      player.currentWidth = player.sprites.stand.width;
+      // player.currentSprite = player.sprites.stand.left;
+      // player.currentCropWidth = player.sprites.stand.cropWidth;
+      // player.currentWidth = player.sprites.stand.width;
       break;
     // case 87:
     //   console.log("up");
     //   player.velocity.y = -10;
     //   break;
     case 68:
-      console.log("right");
+      console.log("keyup right");
       keys.right.pressed = false;
-      player.currentSprite = player.sprites.stand.right;
-      player.currentCropWidth = player.sprites.stand.cropWidth;
-      player.currentWidth = player.sprites.stand.width;
+      // player.currentSprite = player.sprites.stand.right;
+      // player.currentCropWidth = player.sprites.stand.cropWidth;
+      // player.currentWidth = player.sprites.stand.width;
       break;
     case 83:
-      console.log("down");
+      console.log("keyup down");
       break;
     default:
       break;

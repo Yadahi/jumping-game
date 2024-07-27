@@ -34,11 +34,13 @@ class Player {
     this.sprites = {
       stand: {
         right: createImage(spriteStandRight),
+        left: createImage(spriteStandLeft),
         cropWidth: 177,
         width: 66,
       },
       run: {
         right: createImage(spriteRunRight),
+        left: createImage(spriteRunLeft),
         cropWidth: 341,
         width: 127.875,
       },
@@ -263,6 +265,9 @@ window.addEventListener("keydown", ({ keyCode }) => {
     case 65:
       console.log("left");
       keys.left.pressed = true;
+      player.currentSprite = player.sprites.run.left;
+      player.currentCropWidth = player.sprites.run.cropWidth;
+      player.currentWidth = player.sprites.run.width;
       break;
     case 87:
       console.log("up");
@@ -288,6 +293,9 @@ window.addEventListener("keyup", ({ keyCode }) => {
     case 65:
       console.log("left");
       keys.left.pressed = false;
+      player.currentSprite = player.sprites.stand.left;
+      player.currentCropWidth = player.sprites.stand.cropWidth;
+      player.currentWidth = player.sprites.stand.width;
       break;
     // case 87:
     //   console.log("up");
